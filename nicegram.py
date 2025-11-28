@@ -197,12 +197,43 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    await start(update, context)
+    
+    user = query.from_user
+    keyboard = [
+        [InlineKeyboardButton("🔍 Проверить на Refound", callback_data="check_refound")],
+        [InlineKeyboardButton("📖 Инструкция", callback_data="instruction")],
+        [InlineKeyboardButton("💎 Премиум проверка", callback_data="premium")],
+        [InlineKeyboardButton("👨‍💻 Поддержка", callback_data="support")]
+    ]
+    
+    caption = """
+🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
+
+Здесь ты можешь проверить любой Telegram-подарок на возможность возврата (Refound) перед покупкой!
+
+🔍 <b>Проверка покажет:</b>
+• Возможен ли возврат подарка
+• Историю предыдущих возвратов  
+• Риски при покупке
+• Рекомендации по безопасности
+
+⚡ <b>Как это работает?</b>
+1. Скачиваешь файл данных из Nicegram
+2. Отправляешь его боту
+3. Получаешь детальный анализ за 5 секунд!
+
+🛡️ <b>Покупай с уверенностью!</b>
+    """
+    
+    await query.edit_message_caption(
+        caption=caption,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
 
 # Обработчик файлов
 async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    file = await update.message.document.get_file()
     
     # Сообщаем пользователю о начале проверки
     checking_msg = await update.message.reply_text(
@@ -285,6 +316,17 @@ async def send_result(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
         await update.message.reply_text("✅ Результат отправлен пользователю")
+        
+        # Обновляем статус в базе
+        conn = sqlite3.connect(DB)
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE checks SET status = ? WHERE user_id = ? AND status = ?",
+            ("completed", user_id, "pending")
+        )
+        conn.commit()
+        conn.close()
+        
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
 
